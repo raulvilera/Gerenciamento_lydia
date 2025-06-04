@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Integrado de Gestão de Equipamentos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ===== VARIÁVEIS DE CORES ===== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #2980b9;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --white: #ffffff;
+            --gray-light: #bdc3c7;
+            --gray-medium: #95a5a6;
+            --gray-dark: #7f8c8d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        /* ===== ESTILOS GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* ===== NAVEGAÇÃO ===== */
+        .nav-tabs {
+            display: flex;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab.active {
+            background-color: var(--accent-color);
+        }
+
+        /* ===== CONTEÚDO DAS ABAS ===== */
+        .tab-content {
+            display: none;
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FORMULÁRIOS ===== */
+        .form-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 22px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-medium);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* ===== TABELAS ===== */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .data-table th {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .badge-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        /* ===== CARDS DE DASHBOARD ===== */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .card-icon.primary {
+            background-color: var(--accent-color);
+        }
+
+        .card-icon.success {
+            background-color: var(--success-color);
+        }
+
+        .card-icon.warning {
+            background-color: var(--warning-color);
+        }
+
+        .card-icon.danger {
+            background-color: var(--danger-color);
+        }
+
+        .card-body {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* ===== GRÁFICOS ===== */
+        .chart-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+            height: 400px;
+        }
+
+        /* ===== SUB-ABAS ===== */
+        .sub-nav-tabs {
+            display: flex;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .sub-nav-tab {
+            padding: 12px 20px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+        }
+
+        .sub-nav-tab:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .sub-nav-tab.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* ===== FORMULÁRIO DE REGISTRO ===== */
+        .register-form {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+        }
+        
+        .equipment-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+        
+        .equipment-row > div {
+            flex: 1;
+        }
+        
+        .add-equipment-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-equipment-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .time-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-input-group .form-group {
+            flex: 1;
+        }
+        
+        .auto-fill-label {
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-top: 5px;
+        }
+        
+        .registration-codes {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        
+        .registration-codes h4 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .codes-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .code-item {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        /* ===== TERMO DE RESPONSABILIDADE ===== */
+        .termo-container {
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+        
+        .termo-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .termo-content {
+            line-height: 1.8;
+        }
+        
+        .termo-signature {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .termo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .termo-table th, .termo-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .termo-table th {
+            background-color: #f2f2f2;
+        }
+        
+        .termo-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .termo-info-item {
+            flex: 1;
+        }
+        
+        .download-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* ===== FILTROS ===== */
+        .filter-container {
+            background-color: var(--white);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* ===== STATUS ===== */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-available {
+            background-color: var(--success-color);
+        }
+
+        .status-inuse {
+            background-color: var(--accent-color);
+        }
+
+        .status-maintenance {
+            background-color: var(--warning-color);
+        }
+
+        .status-damaged {
+            background-color: var(--danger-color);
+        }
+
+        .status-unused {
+            background-color: var(--gray-medium);
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                flex: 1 0 33%;
+                padding: 12px 5px;
+                font-size: 14px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .equipment-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-laptop"></i>
+                Sistema Integrado de Gestão de Equipamentos
+            </div>
+            <div class="user-info">
+                <span id="currentUser">Administrador</span>
+                <button class="logout-btn" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="openTab('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="nav-tab" onclick="openTab('register')">
+                <i class="fas fa-cubes"></i> Cadastro
+            </div>
+            <div class="nav-tab" onclick="openTab('reservations')">
+                <i class="fas fa-calendar-alt"></i> Reservas
+            </div>
+            <div class="nav-tab" onclick="openTab('reports')">
+                <i class="fas fa-file-alt"></i> Relatórios
+            </div>
+            <div class="nav-tab" onclick="openTab('maintenance')">
+                <i class="fas fa-tools"></i> Manutenção
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="tab-content active">
+            <h2 class="form-title">
+                <i class="fas fa-chart-line"></i> Dashboard Geral
+            </h2>
+            
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Em Uso</div>
+                        <div class="card-icon primary">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                    </div>
+                    <div class="card-body" id="inUseCount">12</div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Disponíveis</div>
+                        <div class="card-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="card-body" id="availableCount">45</div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Em Manutenção</div>
+                        <div class="card-icon warning">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                    <div class="card-body" id="maintenanceCount">8</div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Com Avarias</div>
+                        <div class="card-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="card-body" id="damagedCount">5</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="equipmentStatusChart"></canvas>
+            </div>
+            
+            <h3 style="margin-bottom: 15px;">Últimos Registros</h3>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Professor</th>
+                            <th>Equipamento</th>
+                            <th>Quantidade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10/06/2023</td>
+                            <td>Alex Luth Pereira Maranhão</td>
+                            <td>Notebook</td>
+                            <td>15</td>
+                            <td><span class="badge badge-success">Devolvido</span></td>
+                        </tr>
+                        <tr>
+                            <td>09/06/2023</td>
+                            <td>Ademar Ribeiro de Souza</td>
+                            <td>Tablet</td>
+                            <td>10</td>
+                            <td><span class="badge badge-primary">Em uso</span></td>
+                        </tr>
+                        <tr>
+                            <td>08/06/2023</td>
+                            <td>Wilson Rodrigues Mota</td>
+                            <td>Chromebook</td>
+                            <td>20</td>
+                            <td><span class="badge badge-success">Devolvido</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cadastro e Registro -->
+        <div id="register" class="tab-content">
+            <h2 class="form-title">
+                <i class="fas fa-cubes"></i> Cadastro e Registro de Equipamentos
+            </h2>
+            
+            <div class="sub-nav-tabs">
+                <div class="sub-nav-tab active" onclick="openSubTab('equipmentRegister')">Cadastro de Equipamentos</div>
+                <div class="sub-nav-tab" onclick="openSubTab('withdrawalRegister')">Registro de Retirada/Entrega</div>
+            </div>
+            
+            <!-- Cadastro de Equipamentos -->
+            <div id="equipmentRegister" class="sub-tab-content active">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="equipmentSearch">Pesquisar</label>
+                        <input type="text" id="equipmentSearch" class="form-control" placeholder="Digite para pesquisar...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterStatus">Status</label>
+                        <select id="filterStatus" class="form-control">
+                            <option value="all">Todos</option>
+                            <option value="Disponível">Disponível</option>
+                            <option value="Em uso">Em uso</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Com avarias">Com avarias</option>
+                            <option value="Desuso">Desuso</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Novo Equipamento
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Data Registro</th>
+                                <th>Nº de Série</th>
+                                <th>Nº Registro</th>
+                                <th>Equipamento</th>
+                                <th>Local</th>
+                                <th>Quantidade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>05/06/2023</td>
+                                <td>SN123456789</td>
+                                <td>NB001</td>
+                                <td>Notebook</td>
+                                <td>Sala dos Professores</td>
+                                <td>1</td>
+                                <td><span class="badge badge-success">Disponível</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>04/06/2023</td>
+                                <td>SNTAB001</td>
+                                <td>TAB001</td>
+                                <td>Tablet</td>
+                                <td>Sala de Informática</td>
+                                <td>1</td>
+                                <td><span class="badge badge-primary">Em uso</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>03/06/2023</td>
+                                <td>SNCB001</td>
+                                <td>CB001</td>
+                                <td>Chromebook</td>
+                                <td>Laboratório 1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">Manutenção</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Registro de Retirada/Entrega -->
+            <div id="withdrawalRegister" class="sub-tab-content">
+                <div class="register-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="teacherName">NOME DO PROFESSOR:</label>
+                            <select id="teacherName" class="form-control">
+                                <option value="">Selecione o professor</option>
+                                <option value="ADEMAR RIBEIRO DE SOUZA">ADEMAR RIBEIRO DE SOUZA</option>
+                                <option value="ALEX LUTH PEREIRA MARANHAO">ALEX LUTH PEREIRA MARANHAO</option>
+                                <option value="ALEXANDRE SILVA LIMA">ALEXANDRE SILVA LIMA</option>
+                                <option value="WILSON RODRIGUES MOTA">WILSON RODRIGUES MOTA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="teacherEmail">E-MAIL:</label>
+                            <input type="email" id="teacherEmail" class="form-control" readonly>
+                            <div class="auto-fill-label">Preenchimento automático ao selecionar o professor</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 20px 0 15px; color: var(--primary-color);">Equipamentos</h3>
+                    
+                    <div id="equipmentContainer">
+                        <div class="equipment-row">
+                            <div class="form-group">
+                                <label for="equipmentType">APARELHO:</label>
+                                <select id="equipmentType" class="form-control">
+                                    <option value="">Selecione o aparelho</option>
+                                    <option value="NOTEBOOK">NOTEBOOK</option>
+                                    <option value="TABLET">TABLET</option>
+                                    <option value="SMARTPHONE">SMARTPHONE</option>
+                                    <option value="HEAD SET">HEAD SET</option>
+                                    <option value="CHROMEBOOK">CHROMEBOOK</option>
+                                    <option value="CAIXA DE SOM">CAIXA DE SOM</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="identificationNumber">N° DE IDENTIFICAÇÃO:</label>
+                                <select id="identificationNumber" class="form-control">
+                                    <option value="">Selecione o aparelho primeiro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="serialNumber">N° DE SÉRIE:</label>
+                                <input type="text" id="serialNumber" class="form-control">
+                                <div class="auto-fill-label">Preenchido automaticamente quando possível</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="quantity">QUANTIDADE:</label>
+                                <input type="number" id="quantity" class="form-control" min="1" value="1">
+                            </div>
+                            
+                            <button class="remove-equipment-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Adicionar Equipamento
+                    </button>
+                    
+                    <div class="form-grid" style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label for="studentClass">TURMA:</label>
+                            <select id="studentClass" class="form-control" required>
+                                <option value="">Selecione a turma</option>
+                                <option value="6° ANO A MANHA">6° ANO A MANHA</option>
+                                <option value="6° ANO B MANHA">6° ANO B MANHA</option>
+                                <option value="4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA">4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="room">SALA:</label>
+                            <input type="text" id="room" class="form-control" readonly>
+                            <div class="auto-fill-label">Preenchimento automático com base na turma</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="withdrawalDate">DATA DA RETIRADA:</label>
+                            <input type="date" id="withdrawalDate" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="returnDate">DATA DA ENTREGA:</label>
+                            <input type="date" id="returnDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <div class="form-group">
+                            <label for="withdrawalTime">HORÁRIO DA RETIRADA:</label>
+                            <input type="time" id="withdrawalTime" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="returnTime">HORÁRIO DA ENTREGA:</label>
+                            <input type="time" id="returnTime" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="registration-codes">
+                        <h4>CÓDIGOS DE REGISTRO:</h4>
+                        <div class="codes-list">
+                            <div class="code-item">PROATI - 001 (Raul)</div>
+                            <div class="code-item">PROATI - 002 (Juarez)</div>
+                            <div class="code-item">PROATI - 003 (Júlio)</div>
+                            <div class="code-item">CGP - 004 (ERINEIDE)</div>
+                            <div class="code-item">CGP - 005 (PATRÍCIA)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registrationCode">CÓDIGO DO REGISTRO *</label>
+                        <input type="text" id="registrationCode" class="form-control" placeholder="Digite o código de registro (ex: PROATI - 001)" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observation">OBSERVAÇÃO:</label>
+                        <textarea id="observation" class="form-control" rows="3" placeholder="Observações adicionais"></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-success">
+                            <i class="fas fa-save"></i> REGISTRAR
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> LIMPAR
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="termo-container">
+                    <h3 class="termo-title">TERMO DE RESPONSABILIDADE PELO USO E DEVOLUÇÃO DE APARELHOS</h3>
+                    <div class="termo-content">
+                        <p>
+                            Eu, <span id="termoTeacherName">ADEMAR RIBEIRO DE SOUZA</span>, 
+                            professor(a) da turma <span id="termoClass">4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA</span>, 
+                            declaro estar ciente e de acordo com as responsabilidades quanto ao uso dos aparelhos listados abaixo, 
+                            os quais foram retirados em perfeitas condições de funcionamento.
+                        </p>
+                        
+                        <p>Comprometo-me a:</p>
+                        <ul>
+                            <li>Zelar pelo bom uso dos aparelhos sob minha posse e dos meus alunos durante o período de utilização;</li>
+                            <li>Devolver todos os equipamentos nas mesmas condições em que foram entregues;</li>
+                        </ul>
+                        
+                        <p><strong>OBSERVAÇÃO:</strong> Comunicar imediatamente qualquer dano ou irregularidade ocorrida durante o uso.</p>
+                        
+                        <table class="termo-table">
+                            <thead>
+                                <tr>
+                                    <th>Aparelho</th>
+                                    <th>N° Identificação</th>
+                                    <th>N° Série</th>
+                                    <th>Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Notebook</td>
+                                    <td>NB001</td>
+                                    <td>SN123456789</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>Tablet</td>
+                                    <td>TAB002</td>
+                                    <td>SN987654321</td>
+                                    <td>10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="termo-info">
+                            <div class="termo-info-item">
+                                <p>Assinatura do(a) Professor(a): ____________________________________________</p>
+                            </div>
+                            <div class="termo-info-item">
+                                <p>Turma: <span id="termoClass2">4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="termo-info">
+                            <div class="termo-info-item">
+                                <p>Data da Retirada: <span id="termoWithdrawalDate">10/06/2023</span></p>
+                            </div>
+                            <div class="termo-info-item">
+                                <p>Horário da Retirada: <span id="termoWithdrawalTime">08:30</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="termo-info">
+                            <div class="termo-info-item">
+                                <p>Data da Devolução: <span id="termoReturnDate">12/06/2023</span></p>
+                            </div>
+                            <div class="termo-info-item">
+                                <p>Horário da Devolução: <span id="termoReturnTime">10:45</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="termo-signature">
+                            <p>Registrado por: <span id="termoRegistrant">Raul Pereira</span></p>
+                            <p>Código: <span id="termoRegistrationCode">PROATI - 001</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-btn">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> Baixar Termo em PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Outras abas (simplificadas para demonstração) -->
+        <div id="reservations" class="tab-content">
+            <h2 class="form-title">
+                <i class="fas fa-calendar-alt"></i> Gestão de Reservas
+            </h2>
+            <p>Conteúdo da aba de reservas será exibido aqui.</p>
+        </div>
+        
+        <div id="reports" class="tab-content">
+            <h2 class="form-title">
+                <i class="fas fa-file-alt"></i> Relatórios
+            </h2>
+            <p>Conteúdo da aba de relatórios será exibido aqui.</p>
+        </div>
+        
+        <div id="maintenance" class="tab-content">
+            <h2 class="form-title">
+                <i class="fas fa-tools"></i> Manutenção
+            </h2>
+            <p>Conteúdo da aba de manutenção será exibido aqui.</p>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos professores (nome e e-mail)
+        const professores = {
+            "ADEMAR RIBEIRO DE SOUZA": "ademarribeirosouza@prof.educacao.sp.gov.br",
+            "ALEX LUTH PEREIRA MARANHAO": "luth@prof.educacao.sp.gov.br",
+            "ALEXANDRE SILVA LIMA": "alexandresilvalima@prof.educacao.sp.gov.br",
+            "WILSON RODRIGUES MOTA": "wmota@prof.educacao.sp.gov.br"
+        };
+        
+        // Dados das salas por turma
+        const salasPorTurmaPeriodo = {
+            "6° ANO A MANHA": "Sala 1",
+            "6° ANO B MANHA": "Sala 2",
+            "4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA": "Laboratório 1"
+        };
+        
+        // Dados de equipamentos (aparelhos e seus números de série)
+        const equipamentos = {
+            "NOTEBOOK": [
+                { id: "NB001", serial: "SN123456789" },
+                { id: "NB002", serial: "SN987654321" },
+                { id: "NB003", serial: "SN456789123" }
+            ],
+            "TABLET": [
+                { id: "TAB001", serial: "SNTAB001" },
+                { id: "TAB002", serial: "SNTAB002" },
+                { id: "TAB003", serial: "SNTAB003" }
+            ],
+            "SMARTPHONE": [
+                { id: "SP001", serial: "SNSP001" },
+                { id: "SP002", serial: "SNSP002" }
+            ],
+            "HEAD SET": [
+                { id: "HS001", serial: "SNHS001" },
+                { id: "HS002", serial: "SNHS002" }
+            ],
+            "CHROMEBOOK": [
+                { id: "CB001", serial: "SNCB001" },
+                { id: "CB002", serial: "SNCB002" }
+            ],
+            "CAIXA DE SOM": [
+                { id: "CS001", serial: "SNCS001" },
+                { id: "CS002", serial: "SNCS002" }
+            ]
+        };
+        
+        // Dados dos registrantes (código e nome)
+        const registrantes = {
+            "PROATI - 001": "Raul Pereira Vilera Junior",
+            "PROATI - 002": "Juarez Gomes de Magalhães Filho",
+            "PROATI - 003": "Júlio César Oliveira",
+            "CGP - 004": "Erineide Leite Aragão Nery",
+            "CGP - 005": "Patrícia Gomes Rocha Ribeiro"
+        };
+
+        // Funções para navegação
+        function openTab(tabId) {
+            // Esconde todos os conteúdos das abas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove a classe active de todas as abas de navegação
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostra a aba selecionada e marca como ativa
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Se for a aba de cadastro, mostra o subtab padrão
+            if(tabId === 'register') {
+                openSubTab('equipmentRegister');
+            }
+        }
+        
+        function openSubTab(subTabId) {
+            // Esconde todos os conteúdos das subabas
+            document.querySelectorAll('.sub-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove a classe active de todas as subabas de navegação
+            document.querySelectorAll('.sub-nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostra a subaba selecionada e marca como ativa
+            document.getElementById(subTabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Preencher e-mail do professor automaticamente
+        function fillTeacherEmail() {
+            const teacherSelect = document.getElementById('teacherName');
+            const emailInput = document.getElementById('teacherEmail');
+            const selectedTeacher = teacherSelect.value;
+            
+            if (professores[selectedTeacher]) {
+                emailInput.value = professores[selectedTeacher];
+            } else {
+                emailInput.value = '';
+            }
+        }
+        
+        // Atualizar números de identificação com base no aparelho selecionado
+        function updateIdentificationNumbers() {
+            const equipmentTypeSelect = document.getElementById('equipmentType');
+            const identificationNumberSelect = document.getElementById('identificationNumber');
+            const selectedEquipment = equipmentTypeSelect.value;
+            
+            // Limpar opções anteriores
+            identificationNumberSelect.innerHTML = '<option value="">Selecione o aparelho primeiro</option>';
+            
+            if (selectedEquipment && equipamentos[selectedEquipment]) {
+                equipamentos[selectedEquipment].forEach(eq => {
+                    const option = document.createElement('option');
+                    option.value = eq.id;
+                    option.textContent = eq.id;
+                    identificationNumberSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Preencher número de série automaticamente
+        function fillSerialNumber() {
+            const equipmentTypeSelect = document.getElementById('equipmentType');
+            const identificationNumberSelect = document.getElementById('identificationNumber');
+            const serialNumberInput = document.getElementById('serialNumber');
+            const selectedEquipment = equipmentTypeSelect.value;
+            const selectedId = identificationNumberSelect.value;
+            
+            if (selectedEquipment && selectedId && equipamentos[selectedEquipment]) {
+                const equipment = equipamentos[selectedEquipment].find(eq => eq.id === selectedId);
+                if (equipment) {
+                    serialNumberInput.value = equipment.serial;
+                    return;
+                }
+            }
+            
+            serialNumberInput.value = '';
+        }
+        
+        // Atualizar sala com base na turma selecionada
+        function updateRoom() {
+            const classSelect = document.getElementById('studentClass');
+            const roomInput = document.getElementById('room');
+            const selectedClass = classSelect.value;
+            
+            if (salasPorTurmaPeriodo[selectedClass]) {
+                roomInput.value = salasPorTurmaPeriodo[selectedClass];
+            } else {
+                roomInput.value = '';
+            }
+        }
+        
+        // Adicionar novo campo de equipamento
+        function addEquipment() {
+            const container = document.getElementById('equipmentContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'equipment-row';
+            newRow.innerHTML = `
+                <div class="form-group">
+                    <label>APARELHO:</label>
+                    <select class="form-control equipment-type">
+                        <option value="">Selecione o aparelho</option>
+                        <option value="NOTEBOOK">NOTEBOOK</option>
+                        <option value="TABLET">TABLET</option>
+                        <option value="SMARTPHONE">SMARTPHONE</option>
+                        <option value="HEAD SET">HEAD SET</option>
+                        <option value="CHROMEBOOK">CHROMEBOOK</option>
+                        <option value="CAIXA DE SOM">CAIXA DE SOM</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>N° DE IDENTIFICAÇÃO:</label>
+                    <select class="form-control identification-number">
+                        <option value="">Selecione o aparelho primeiro</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>N° DE SÉRIE:</label>
+                    <input type="text" class="form-control serial-number">
+                    <div class="auto-fill-label">Preenchido automaticamente quando possível</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>QUANTIDADE:</label>
+                    <input type="number" class="form-control quantity" min="1" value="1">
+                </div>
+                
+                <button class="remove-equipment-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(newRow);
+        }
+        
+        // Função para logout
+        function logout() {
+            alert('Sessão encerrada com sucesso!');
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar gráfico
+            const ctx = document.getElementById('equipmentStatusChart').getContext('2d');
+            const equipmentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Em Uso', 'Disponíveis', 'Manutenção', 'Com Avarias', 'Desuso'],
+                    datasets: [{
+                        data: [12, 45, 8, 5, 3],
+                        backgroundColor: [
+                            '#3498db',
+                            '#27ae60',
+                            '#f39c12',
+                            '#e74c3c',
+                            '#95a5a6'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Status dos Equipamentos',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Configurar datas atuais
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('withdrawalDate').value = today;
+            document.getElementById('returnDate').value = today;
+            
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const time = `${hours}:${minutes}`;
+            
+            document.getElementById('withdrawalTime').value = time;
+            document.getElementById('returnTime').value = time;
+            
+            // Adicionar event listeners
+            document.getElementById('teacherName').addEventListener('change', fillTeacherEmail);
+            document.getElementById('equipmentType').addEventListener('change', updateIdentificationNumbers);
+            document.getElementById('identificationNumber').addEventListener('change', fillSerialNumber);
+            document.getElementById('studentClass').addEventListener('change', updateRoom);
+            
+            // Preencher automaticamente o primeiro professor
+            document.getElementById('teacherName').value = "ADEMAR RIBEIRO DE SOUZA";
+            fillTeacherEmail();
+            
+            // Preencher automaticamente a primeira turma
+            document.getElementById('studentClass').value = "4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA";
+            updateRoom();
+        });
+    </script>
+</body>
+</htmlindx.html

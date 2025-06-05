@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Integrado de Gestão de Equipamentos</title>
+     <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <!-- Bibliotecas externas -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* ===== VARIÁVEIS DE CORES ===== */
@@ -1128,6 +1135,23 @@
     </div>
 
     <script>
+// Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOoXyjLQPfgzQM06LVy-TRSPdSM_8CjcE",
+            authDomain: "gerenciamentoaparelho.firebaseapp.com",
+            projectId: "gerenciamentoaparelho",
+            storageBucket: "gerenciamentoaparelho.appspot.com",
+            messagingSenderId: "751628186418",
+            appId: "1:751628186418:web:dd68af74d9e3723c179d2b",
+            measurementId: "G-K02ZZQ4JBK"
+        };
+
+        // Inicializa o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+
         // Dados dos professores (nome e e-mail)
         const professores = {
             "ADEMAR RIBEIRO DE SOUZA": "ademarribeirosouza@prof.educacao.sp.gov.br",

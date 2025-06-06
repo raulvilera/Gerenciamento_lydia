@@ -543,32 +543,32 @@
     </div>
 
     <script>
-         // Configuração CORRIGIDA do Firebase
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        // Função no sistema de CADASTRO
+async function cadastrarProfessorFirestore(nome, email) {
+  await db.collection("professores").doc(nome).set({ email });
+}
+        // Função no sistema de CADASTRO
+async function cadastrarEquipamentoFirestore(tipo, marca) {
+  await db.collection("equipamentos").doc(tipo).set({ marca });
+}
+        // Configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyBOoXyLQPfgzQM06LVy-TRSPdSM_8CjcE",
+            apiKey: "AIzaSyBOoXyjLQPfgzQM06LVy-TRSPdSM_8CjcE",
             authDomain: "gerenciamentoaparelho.firebaseapp.com",
-            databaseURL: "https://gerenciamentoaparelho-default-rtdb.firebaseio.com",
             projectId: "gerenciamentoaparelho",
             storageBucket: "gerenciamentoaparelho.appspot.com",
             messagingSenderId: "751628186418",
             appId: "1:751628186418:web:dd68af74d9e3723c179d2b",
-            measurementId: "G-K022ZQ4JBK"
+            measurementId: "G-K02ZZQ4JBK"
         };
 
-        // Inicialização CORRIGIDA do Firebase
-        try {
-            // Verifica se já existe um app Firebase inicializado
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            
-            const database = firebase.database();
-            const auth = firebase.auth();
-            
-            console.log("Firebase inicializado com sucesso!");
-        } catch (error) {
-            console.error("Erro ao inicializar Firebase:", error);
-        }
+        // Inicializa o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
         
         // Função para atualizar o status de conexão

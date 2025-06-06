@@ -545,37 +545,33 @@
     </div>
 
     <script>
-        // Configuração do Firebase
+         // Configuração CORRIGIDA do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyBOoXyjLQPfgzQM06LVy-TRSPdSM_8CjcE",
+            apiKey: "AIzaSyBOoXyLQPfgzQM06LVy-TRSPdSM_8CjcE",
             authDomain: "gerenciamentoaparelho.firebaseapp.com",
+            databaseURL: "https://gerenciamentoaparelho-default-rtdb.firebaseio.com",
             projectId: "gerenciamentoaparelho",
             storageBucket: "gerenciamentoaparelho.appspot.com",
             messagingSenderId: "751628186418",
             appId: "1:751628186418:web:dd68af74d9e3723c179d2b",
-            measurementId: "G-K02ZZQ4JBK"
+            measurementId: "G-K022ZQ4JBK"
         };
 
-        // Inicializa o Firebase
-        let database, auth;
-        let firebaseConnected = false;
-        
+        // Inicialização CORRIGIDA do Firebase
         try {
-            // Inicializa o Firebase
-            const app = firebase.initializeApp(firebaseConfig);
-            database = firebase.database();
-            auth = firebase.auth();
+            // Verifica se já existe um app Firebase inicializado
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             
-            // Atualiza o status de conexão
-            firebaseConnected = true;
-            updateConnectionStatus();
+            const database = firebase.database();
+            const auth = firebase.auth();
             
             console.log("Firebase inicializado com sucesso!");
         } catch (error) {
-            console.error("Erro ao inicializar o Firebase:", error);
-            firebaseConnected = false;
-            updateConnectionStatus();
+            console.error("Erro ao inicializar Firebase:", error);
         }
+
         
         // Função para atualizar o status de conexão
         function updateConnectionStatus() {
